@@ -1,12 +1,29 @@
 from django.db import models
-
+from django.utils import timezone
 # Create your models here.
 from django.db.models.functions import Now
+
+class freqQuestionario(models.Model):
+
+    nome = models.CharField(max_length=100, verbose_name="frequencia")
+    descricao = models.TextField(verbose_name="Descricao", blank=True, null=True)
+
+    class Meta:
+        verbose_name = "freqquestionario"
+        verbose_name_plural = "freqquestionarios"
+
+    def __str__(self):
+        return f'{self.nome}'
+
+    def get_absolute_url(self):
+        return reverse("freqquestionario_detail", kwargs={"pk": self.pk})
+
+
 class questionario(models.Model):
 
-    nome = models.CharField(max_length=100, verbose_name="Nome do questionario", default=f"Questionario_{Now()}")    
-    freq = models.CharField(max_length=50)
-    dat_cria = models.DateTimeField(verbose_name="data de cadastro", auto_now_add=True)
+    nome = models.CharField(max_length=100, verbose_name="Nome do questionario")    
+    freq = models.ForeignKey(freqQuestionario, on_delete=models.CASCADE, verbose_name="Frequencia do Questionario", blank=True, null=True)
+    dat_cria = models.DateTimeField(verbose_name="data de cadastro", default=timezone.now)
     ativo = models.BooleanField(verbose_name="ativo")
     
     def __str__(self):
@@ -26,21 +43,21 @@ class tipoPergunta(models.Model):
         verbose_name_plural = "tipoperguntas"
 
     def __str__(self):
-        return self.nome
+        return f'{self.nome}'
 
 class pergunta(models.Model):
 
     nome = models.CharField(max_length=100, verbose_name="Pergunta")
     descricao = models.TextField(verbose_name="Descricao", blank=True, null=True)
     tipo = models.ForeignKey(tipoPergunta, on_delete=models.CASCADE, verbose_name="Tipo de Pergunta")
-    dat_cria = models.DateTimeField(verbose_name="data de cadastro", auto_now_add=True)
+    dat_cria = models.DateTimeField(verbose_name="data de cadastro", default=timezone.now)
 
     class Meta:
         verbose_name = "pergunta"
         verbose_name_plural = "perguntas"
 
     def __str__(self):
-        return {self.nome}
+        return f'{self.nome}'
 
 class funcao(models.Model):
 
@@ -52,40 +69,41 @@ class funcao(models.Model):
         verbose_name_plural = "funcoes"
 
     def __str__(self):
-        return self.nome
+        return f'{self.nome}'
 
 class usuario(models.Model):
 
     nome = models.CharField(verbose_name='nome', max_length=50)
     contato = models.CharField(verbose_name='contato', max_length=50)
     funcao = models.ForeignKey(funcao, on_delete=models.CASCADE, verbose_name='funcao')
-    dat_cadastro = models.DateTimeField(verbose_name="data de cadastro", auto_now_add=True)
+    dat_cadastro = models.DateTimeField(verbose_name="data de cadastro", default=timezone.now)
+    senha = models.CharField(verbose_name='senha', max_length=50, default="123456")
 
     class Meta:
         verbose_name = "usuario"
         verbose_name_plural = "usuarios"
 
     def __str__(self):
-        return self.nome
+        return f'{self.nome}'
 
 class resposta(models.Model):
 
-    nome = models.CharField(max_length=100, verbose_name="Nome da Resposta", default=f"Resposta_{Now()}")
+    nome = models.CharField(max_length=100, verbose_name="Nome da Resposta", default=f"Resposta_{timezone.now().timestamp()}")
     resposta = models.CharField(max_length=100, verbose_name="Resposta")
     pergunta = models.ForeignKey(pergunta, on_delete=models.CASCADE, verbose_name="Pergunta")
     usuario = models.ForeignKey(usuario, on_delete=models.CASCADE, verbose_name="Usuario")
-    dat_cria = models.DateTimeField(verbose_name="data de cadastro", auto_now_add=True)
+    dat_cria = models.DateTimeField(verbose_name="data de cadastro", default=timezone.now)
 
     class Meta:
         verbose_name = "resposta"
         verbose_name_plural = "respostas"
 
     def __str__(self):
-        return self.nome
+        return f'{self.nome}'
 
 class questionarioPergunta(models.Model):
 
-    name = models.CharField(max_length=100, verbose_name="Nome da Pergunta", default=f"Pergunta_{Now()}")
+    name = models.CharField(max_length=100, verbose_name="Nome da Pergunta")
     questionario = models.ForeignKey(questionario, on_delete=models.CASCADE, verbose_name="Questionario")
     pergunta = models.ForeignKey(pergunta, on_delete=models.CASCADE, verbose_name="Pergunta")    
 
@@ -94,4 +112,4 @@ class questionarioPergunta(models.Model):
         verbose_name_plural = "questionarioperguntas"
 
     def __str__(self):
-        return self.name
+        return f'{self.name}'
