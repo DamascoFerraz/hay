@@ -1,7 +1,6 @@
 from django.db import models
 from django.utils import timezone
 # Create your models here.
-from django.db.models.functions import Now
 
 class freqQuestionario(models.Model):
 
@@ -20,10 +19,10 @@ class freqQuestionario(models.Model):
 
 
 class questionario(models.Model):
-
+    
     nome = models.CharField(max_length=100, verbose_name="Nome do questionario")    
     freq = models.ForeignKey(freqQuestionario, on_delete=models.CASCADE, verbose_name="Frequencia do Questionario", blank=True, null=True)
-    dat_cria = models.DateTimeField(verbose_name="data de cadastro", default=timezone.now)
+    dat_cria = models.DateTimeField(verbose_name="data de cadastro", auto_now_add=True)
     ativo = models.BooleanField(verbose_name="ativo")
     
     def __str__(self):
@@ -50,7 +49,7 @@ class pergunta(models.Model):
     nome = models.CharField(max_length=100, verbose_name="Pergunta")
     descricao = models.TextField(verbose_name="Descricao", blank=True, null=True)
     tipo = models.ForeignKey(tipoPergunta, on_delete=models.CASCADE, verbose_name="Tipo de Pergunta")
-    dat_cria = models.DateTimeField(verbose_name="data de cadastro", default=timezone.now)
+    dat_cria = models.DateTimeField(verbose_name="data de cadastro", auto_now_add=True)
 
     class Meta:
         verbose_name = "pergunta"
@@ -75,8 +74,8 @@ class usuario(models.Model):
 
     nome = models.CharField(verbose_name='nome', max_length=50)
     contato = models.CharField(verbose_name='contato', max_length=50)
-    funcao = models.ForeignKey(funcao, on_delete=models.CASCADE, verbose_name='funcao')
-    dat_cadastro = models.DateTimeField(verbose_name="data de cadastro", default=timezone.now)
+    funcao = models.ForeignKey(funcao, on_delete=models.CASCADE, verbose_name='funcao', default='user')
+    dat_cadastro = models.DateTimeField(verbose_name="data de cadastro", auto_now_add=True)
     senha = models.CharField(verbose_name='senha', max_length=50, default="123456")
 
     class Meta:
@@ -88,11 +87,11 @@ class usuario(models.Model):
 
 class resposta(models.Model):
 
-    nome = models.CharField(max_length=100, verbose_name="Nome da Resposta", default=f"Resposta_{timezone.now().timestamp()}")
+    nome = models.CharField(max_length=100, verbose_name="Nome da Resposta")
     resposta = models.CharField(max_length=100, verbose_name="Resposta")
     pergunta = models.ForeignKey(pergunta, on_delete=models.CASCADE, verbose_name="Pergunta")
     usuario = models.ForeignKey(usuario, on_delete=models.CASCADE, verbose_name="Usuario")
-    dat_cria = models.DateTimeField(verbose_name="data de cadastro", default=timezone.now)
+    dat_cria = models.DateTimeField(verbose_name="data de cadastro", auto_now_add=True)
 
     class Meta:
         verbose_name = "resposta"
