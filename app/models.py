@@ -14,8 +14,7 @@ class freqQuestionario(models.Model):
     def __str__(self):
         return f'{self.nome}'
 
-    def get_absolute_url(self):
-        return reverse("freqquestionario_detail", kwargs={"pk": self.pk})
+
 
 
 class questionario(models.Model):
